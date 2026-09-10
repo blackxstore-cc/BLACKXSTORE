@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BLACK X STORE - Premium Virtual Card</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Dynamic Sound System Elements -->
+  <audio id="tapSound" src="" preload="auto"></audio>
+  <audio id="buySound" src="" preload="auto"></audio>
+  <audio id="errorSound" src="" preload="auto"></audio>
+  <audio id="notifySound" src="" preload="auto"></audio>
+
+  <!-- Premium Lighting Effect -->
+  <div class="ambient-glow-mesh"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      BLACK <span class="text-purple">X STORE</span>
+    </div>
+    <div class="nav-actions-group">
+      <button class="nav-pill-btn sales-btn" onclick="openSalesModal()">
+        <i class="fa-solid fa-bolt"></i> Live Sales
+      </button>
+      
+      <button class="nav-pill-btn solid-purple-btn" onclick="openOrdersModal()">
+        <i class="fa-solid fa-cube"></i> My Orders
+      </button>
+
+      <div class="admin-dropdown-wrapper">
+        <button class="nav-pill-btn admin-pill" onclick="toggleAdminDropdown(event)">
+          <span class="green-dot">●</span> ADMIN
+        </button>
+        <div id="adminDropdown" class="admin-dropdown-menu hidden">
+          <a href="#" id="tgLinkNav" target="_blank"><i class="fa-brands fa-telegram"></i> Telegram DM</a>
+          <a href="#" id="igLinkNav" target="_blank"><i class="fa-brands fa-instagram"></i> Instagram DM</a>
+        </div>
+      </div>
+
+      <!-- Auth Section -->
+      <div id="authNavSection"></div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero-section">
+    <div class="secure-badge"><i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> FAST AUTO-CHECKOUT</div>
+    <h1 class="hero-title">BLACK <span class="text-purple">X STORE</span></h1>
+    <h2 class="hero-subtitle">The Most Trusted Premium Virtual Cards</h2>
+    <p class="hero-desc">Secure. Instant. Global. Built for professionals who demand reliability.</p>
+
+    <div class="hero-rating-box">
+      <div class="hr-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+      <div class="hr-text"><strong>4.9/5</strong> <span>(15,420+ Users)</span></div>
+    </div>
+
+    <div class="hero-features-list">
+      <span class="hf-item"><i class="fa-solid fa-check" style="color:#10b981;"></i> 100% Pre-loaded</span>
+      <span class="hf-item"><i class="fa-solid fa-lock" style="color:#f59e0b;"></i> 256-Bit Gateway</span>
+      <span class="hf-item"><i class="fa-solid fa-bolt" style="color:#f59e0b;"></i> Priority Dispatch</span>
+    </div>
+  </header>
+
+  <!-- Marketplace Section -->
+  <main id="marketplace" class="catalog-section">
+    <div class="catalog-heading">
+      <h2>Choose <span class="text-purple">Premium Card</span></h2>
+      <p>Select a profile calibrated to your needs.</p>
+    </div>
+
+    <div class="category-tabs-row">
+      <button class="cat-tab active" onclick="filterCards('visa', this)"><i class="fa-brands fa-cc-visa"></i> VISA <span class="tab-badge" id="badgeVisa">10</span></button>
+      <button class="cat-tab" onclick="filterCards('mastercard', this)"><i class="fa-brands fa-cc-mastercard"></i> MASTERCARD <span class="tab-badge" id="badgeMc">10</span></button>
+      <button class="cat-tab" onclick="filterCards('amex', this)"><i class="fa-brands fa-cc-amex"></i> AMEX <span class="tab-badge" id="badgeAmex">10</span></button>
+    </div>
+
+    <div id="cardsList" class="cards-layout-grid"></div>
+  </main>
+
+  <!-- AUTHENTICATION MODAL -->
+  <div id="authModal" class="modal-backdrop">
+    <div class="modal-card-box auth-modal-box">
+      <button class="btn-close-modal" onclick="closeAuthModal()">&times;</button>
+      
+      <div class="auth-header">
+        <div class="auth-shield-icon"><i class="fa-solid fa-user-shield"></i></div>
+        <h3 id="authTitle">Login</h3>
+        <p id="authSub">Access your encrypted dashboard</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" id="tabLogin" onclick="switchAuthTab('login')">Login</button>
+        <button class="auth-tab-btn" id="tabRegister" onclick="switchAuthTab('register')">Create Account</button>
+      </div>
+
+      <div class="auth-form-body">
+        <div id="authError" class="auth-error hidden">Invalid credentials</div>
+        
+        <div class="pro-input-group hidden" id="authNameGroup">
+          <i class="fa-regular fa-id-badge"></i>
+          <input type="text" id="authFullName" placeholder="Full Name" autocomplete="off" />
+        </div>
+
+        <div class="pro-input-group">
+          <i class="fa-solid fa-user"></i>
+          <input type="text" id="authUsername" placeholder="Username" autocomplete="off" />
+        </div>
+        
+        <div class="pro-input-group">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="authPassword" placeholder="Password" />
+        </div>
+        
+        <button class="btn-auth-submit" id="authSubmitBtn" onclick="processAuth()">
+          <span id="authBtnText">Login</span>
+          <div class="spinner-mini hidden" id="authLoader"></div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUPER ADMIN DASHBOARD MODAL -->
+  <div id="adminPanelModal" class="modal-backdrop">
+    <div class="modal-card-box admin-panel-box">
+      <button class="btn-close-modal" onclick="closeAdminPanel()">&times;</button>
+      
+      <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(239, 68, 68, 0.3);">
+        <div style="background: rgba(239, 68, 68, 0.1); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid #ef4444;">
+          <i class="fa-solid fa-server" style="color: #ef4444; font-size: 24px;"></i>
+        </div>
+        <div>
+          <h3 style="color: #ef4444; font-size: 20px; font-weight: 800; letter-spacing: 1px;">STORE CONTROL CENTER</h3>
+          <p style="color: #94a3b8; font-size: 11px;">Owner Access Level • <span style="color: #10b981;">Online</span></p>
+        </div>
+      </div>
+
+      <!-- FIXED TABS: Now all 6 tabs are present so JS won't break -->
+      <div class="auth-tabs" style="margin-bottom: 20px; flex-wrap: wrap; gap: 4px;">
+        <button class="auth-tab-btn active" id="tabAdminDash" onclick="switchAdminTab('dash')" style="padding: 6px; font-size: 10px;">Home</button>
+        <button class="auth-tab-btn" id="tabAdminOrders" onclick="switchAdminTab('orders')" style="padding: 6px; font-size: 10px;">Orders</button>
+        <button class="auth-tab-btn" id="tabAdminCards" onclick="switchAdminTab('cards')" style="padding: 6px; font-size: 10px;">Cards</button>
+        <button class="auth-tab-btn" id="tabAdminUsers" onclick="switchAdminTab('users')" style="padding: 6px; font-size: 10px;">Users</button>
+        <button class="auth-tab-btn" id="tabAdminVisits" onclick="switchAdminTab('visits')" style="padding: 6px; font-size: 10px;">Logs</button>
+        <button class="auth-tab-btn" id="tabAdminSettings" onclick="switchAdminTab('settings')" style="padding: 6px; font-size: 10px;">Settings</button>
+      </div>
+
+      <div id="adminDashboardContainer" class="orders-list-wrapper" style="max-height: 450px; padding-right: 5px;"></div>
+      <div id="adminOrdersContainer" class="orders-list-wrapper hidden" style="max-height: 450px; padding-right: 5px;"></div>
+      <div id="adminCardsContainer" class="orders-list-wrapper hidden" style="max-height: 450px; padding-right: 5px; overflow-x:hidden;"></div>
+      <div id="adminUsersContainer" class="orders-list-wrapper hidden" style="max-height: 450px; padding-right: 5px;"></div>
+      <div id="adminVisitsContainer" class="orders-list-wrapper hidden" style="max-height: 450px; padding-right: 5px;"></div>
+      
+      <!-- STORE SETTINGS CONTAINER -->
+      <div id="adminSettingsContainer" class="orders-list-wrapper hidden" style="max-height: 450px; padding-right: 5px; padding-bottom: 20px;">
+        <div class="admin-visit-card" style="flex-direction: column; align-items: flex-start; padding: 15px;">
+          <h4 style="color:#c084fc; margin-bottom: 15px; font-size: 14px;"><i class="fa-solid fa-sliders"></i> Store Configuration</h4>
+          
+          <div class="pro-input-group" style="width: 100%;">
+            <label style="font-size:10px; color:#94a3b8; display:block; margin-bottom:5px;">UPI ID (Receiving Account)</label>
+            <i class="fa-solid fa-building-columns"></i>
+            <input type="text" id="adminSettingUpi" placeholder="e.g. yourname@ybl" />
+          </div>
+          
+          <div class="pro-input-group" style="width: 100%;">
+            <label style="font-size:10px; color:#94a3b8; display:block; margin-bottom:5px;">Telegram Support Link</label>
+            <i class="fa-brands fa-telegram"></i>
+            <input type="text" id="adminSettingTg" placeholder="https://t.me/..." />
+          </div>
+
+          <div class="pro-input-group" style="width: 100%;">
+            <label style="font-size:10px; color:#94a3b8; display:block; margin-bottom:5px;">Website Sound Theme</label>
+            <select id="adminSettingSound" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(168,85,247,0.3); color: #fff; padding: 14px 14px 14px 14px; border-radius: 10px; font-size: 13px; outline: none;">
+              <option value="modern">Modern Professional (Default)</option>
+              <option value="scifi">Sci-Fi & Cyberpunk</option>
+              <option value="arcade">Retro Arcade Gaming</option>
+            </select>
+          </div>
+
+          <button onclick="saveStoreSettings()" style="background:#10b981; color:#fff; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; width:100%; font-size:13px; margin-top:10px;">Save Configurations</button>
+        </div>
+
+        <div class="admin-visit-card" style="flex-direction: column; text-align: center; padding: 20px; border-color:#ef4444; margin-top:20px;">
+          <h4 style="color:#ef4444; font-size: 16px; margin-bottom:10px;">DANGER ZONE</h4>
+          <button onclick="factoryResetDB()" style="background: rgba(239,68,68,0.2); border: 1px solid #ef4444; color:#ef4444; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer; width:100%; font-size: 12px;"><i class="fa-solid fa-skull"></i> FACTORY RESET DATABASE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Professional Payment Gateway Modal -->
+  <div id="paymentModal" class="modal-backdrop">
+    <div class="modal-card-box payment-gateway-box">
+      <button class="btn-close-modal" onclick="closeModal()">&times;</button>
+      
+      <div class="gateway-header">
+        <div class="gateway-secure-tag"><i class="fa-solid fa-lock"></i> 256-BIT SECURE GATEWAY</div>
+        <div class="price-display-wrapper">
+          <span class="currency-symbol">₹</span>
+          <span class="gateway-amount" id="payCardFee">750</span>
+        </div>
+        <p class="gateway-sub" id="payCardName">Visa Standard Tier</p>
+      </div>
+
+      <div id="paymentStep1">
+        <div class="pay-mode-selector">
+          <button class="mode-btn active" id="btnModeQr" onclick="switchPayMode('qr')"><i class="fa-solid fa-qrcode"></i> Scan QR</button>
+          <button class="mode-btn" id="btnModeUpi" onclick="switchPayMode('upi')"><i class="fa-solid fa-mobile-screen-button"></i> UPI Direct</button>
+        </div>
+
+        <div class="payment-display-area">
+          <div id="qrDisplay" class="pay-display-block">
+            <div class="qr-frame">
+              <div class="qr-scanner-wrapper">
+                <img id="dynamicQrImg" src="" alt="UPI Payment QR Code" />
+                <div class="scanner-laser"></div>
+                <div class="scanner-corner tl"></div><div class="scanner-corner tr"></div>
+                <div class="scanner-corner bl"></div><div class="scanner-corner br"></div>
+              </div>
+            </div>
+            <p class="scan-text">Scan QR or Direct Payment</p>
+            <div class="vpa-copy-pill" onclick="copyVpaAddress()">
+              <span id="vpaTextDisplay">blackxmarket@ybl</span> <i class="fa-regular fa-copy"></i>
+            </div>
+          </div>
+
+          <div id="upiDisplay" class="pay-display-block hidden">
+            <p class="app-choose-label">Click preferred app to pay:</p>
+            <div class="upi-apps-grid">
+              <a id="linkGpay" href="#" class="upi-app-btn"><i class="fa-brands fa-google-pay text-purple"></i> GPay</a>
+              <a id="linkPhonePe" href="#" class="upi-app-btn"><i class="fa-solid fa-bolt text-purple"></i> PhonePe</a>
+              <a id="linkPaytm" href="#" class="upi-app-btn"><i class="fa-solid fa-wallet text-purple"></i> Paytm</a>
+              <a id="linkGeneric" href="#" class="upi-app-btn"><i class="fa-solid fa-building-columns text-purple"></i> Other</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="gateway-lock-box">
+          <div class="lock-top">
+            <span><i class="fa-solid fa-shield"></i> LOCKED: <strong id="lockedAmount">₹750</strong></span>
+            <span class="timer-red"><i class="fa-regular fa-clock"></i> <span id="payTimer">10:00</span></span>
+          </div>
+          <p class="caution-note">
+            ⚠️ <strong>TYPE MANUALLY:</strong> Please enter the exact amount (₹<span id="manualAmount"></span>) manually in your UPI app.
+          </p>
+        </div>
+
+        <button class="btn-gateway-next" onclick="goToStep2()">I Have Made The Payment <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+
+      <div id="paymentStep2" class="hidden">
+        <div class="utr-input-box">
+          <label><i class="fa-solid fa-receipt"></i> ENTER 12-DIGIT UTR ID</label>
+          <input type="text" id="utrInput" placeholder="e.g. 429104829104" maxlength="12" oninput="validateUtrInput(this)" />
+          <p class="utr-help-text">Find the 12-digit UTR/Ref ID in your UPI app.</p>
+        </div>
+        <div class="action-buttons-flex">
+          <button class="btn-gateway-back" onclick="goToStep1()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+          <button class="btn-gateway-submit" onclick="startUtrVerification()">Verify Payment <i class="fa-solid fa-circle-check"></i></button>
+        </div>
+      </div>
+
+      <div id="paymentStepLoader" class="hidden text-center">
+        <div class="verification-loader-container"><div class="spinner-ring"></div><i class="fa-solid fa-shield-halved loader-shield-icon"></i></div>
+        <h4 class="verifying-title">Verifying...</h4>
+        <p class="verifying-desc">Connecting to network and validating UTR.</p>
+      </div>
+
+      <div id="paymentStep3" class="hidden">
+        <div class="failed-status-banner">
+          <i class="fa-solid fa-circle-xmark pulse-icon-red"></i>
+          <h4>Payment Failed</h4>
+          <p>Invalid UTR or transaction mismatch. Your order has been rejected.</p>
+        </div>
+        <div class="action-buttons-flex" style="margin-top: 20px;">
+          <button class="btn-gateway-back" onclick="goToStep2()"><i class="fa-solid fa-arrow-left"></i> Try Again</button>
+          <button class="btn-close-final" onclick="closeModal()">Close</button>
+        </div>
+      </div>
+
+      <div id="paymentStepSuccessAdmin" class="hidden">
+        <div class="failed-status-banner" style="background: rgba(16, 185, 129, 0.1); border-color: #10b981;">
+          <i class="fa-solid fa-circle-check" style="font-size: 36px; color: #10b981; margin-bottom:10px;"></i>
+          <h4 style="color:#10b981;">Payment Successful</h4>
+          <p>Owner Order Approved. Card will be delivered in 10 minutes.</p>
+        </div>
+        <div class="action-buttons-flex" style="margin-top: 20px;">
+          <button class="btn-gateway-submit" onclick="openOrdersModal(); closeModal();" style="width:100%;">View My Orders</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Sales Modal -->
+  <div id="salesModal" class="modal-backdrop">
+    <div class="modal-card-box orders-modal-box">
+      <button class="btn-close-modal" onclick="closeSalesModal()">&times;</button>
+      <h3 class="modal-header-title"><i class="fa-solid fa-bolt text-purple"></i> Live Sales Feed</h3>
+      <div id="allSalesListContainer" class="orders-list-wrapper sales-list-wrapper" style="margin-top: 15px;"></div>
+    </div>
+  </div>
+
+  <!-- My Orders Modal -->
+  <div id="ordersModal" class="modal-backdrop">
+    <div class="modal-card-box orders-modal-box">
+      <button class="btn-close-modal" onclick="closeOrdersModal()">&times;</button>
+      <h3 class="modal-header-title"><i class="fa-solid fa-cube text-purple"></i> My Placed Orders</h3>
+      <p class="modal-header-sub" id="myOrdersSub">Your recent virtual card purchases</p>
+      <div id="ordersListContainer" class="orders-list-wrapper"></div>
+    </div>
+  </div>
+
+  <!-- Live Buyer Notification Toast -->
+  <div id="liveBuyerToast" class="live-toast">
+    <div class="avatar-circle">
+      <i class="fa-regular fa-user"></i>
+      <span class="pulse-dot"></span>
+    </div>
+    <div class="buyer-info">
+      <div class="buyer-name" id="toastName">Dhruv Sharma</div>
+      <div class="buyer-action" id="toastAction">Bought Visa Standard</div>
+    </div>
+    <div class="toast-amount-badge" id="toastAmount">+₹750</div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-wrap">
+      <h4>24/7 DEDICATED SUPPORT</h4>
+      <div class="support-buttons">
+        <a href="#" id="tgLinkFooter" target="_blank" class="btn-support tg-link"><i class="fa-brands fa-telegram"></i> Telegram Support</a>
+        <a href="#" id="igLinkFooter" target="_blank" class="btn-support ig-link"><i class="fa-brands fa-instagram"></i> Instagram Support</a>
+      </div>
+      <div class="mail-text">
+        <i class="fa-regular fa-envelope"></i> <span>Support Email:</span> <a href="mailto:blackxstore07@gmail.com">blackxstore07@gmail.com</a>
+      </div>
+      <p class="copy-text">© 2026 BLACK X STORE • All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
